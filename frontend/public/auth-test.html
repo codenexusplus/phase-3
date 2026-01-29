@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Authentication Test</h1>
+    
+    <div>
+        <h2>Register</h2>
+        <input type="email" id="reg-email" placeholder="Email" value="test2@example.com">
+        <input type="text" id="reg-username" placeholder="Username" value="testuser2">
+        <input type="password" id="reg-password" placeholder="Password" value="securepassword123">
+        <button onclick="register()">Register</button>
+    </div>
+    
+    <div>
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="Email" value="test@example.com">
+        <input type="password" id="login-password" placeholder="Password" value="securepassword123">
+        <button onclick="login()">Login</button>
+    </div>
+    
+    <div>
+        <h2>Get Profile (with token)</h2>
+        <input type="text" id="token-input" placeholder="Access Token">
+        <button onclick="getProfile()">Get Profile</button>
+    </div>
+    
+    <div id="result" style="margin-top: 20px; padding: 10px; background-color: #f0f0f0;"></div>
+
+    <script>
+        // Set base URL to use the proxy
+        axios.defaults.baseURL = '/';
+        
+        async function register() {
+            const email = document.getElementById('reg-email').value;
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            
+            try {
+                const response = await axios.post('/auth/register', {
+                    email,
+                    username,
+                    password
+                });
+                
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<pre>Error: ' + JSON.stringify(error.response?.data || error.message, null, 2) + '</pre>';
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await axios.post('/auth/login', {
+                    email,
+                    password
+                });
+                
+                document.getElementById('token-input').value = response.data.access_token;
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<pre>Error: ' + JSON.stringify(error.response?.data || error.message, null, 2) + '</pre>';
+            }
+        }
+        
+        async function getProfile() {
+            const token = document.getElementById('token-input').value;
+            
+            try {
+                const response = await axios.get('/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<pre>Error: ' + JSON.stringify(error.response?.data || error.message, null, 2) + '</pre>';
+            }
+        }
+    </script>
+</body>
+</html>

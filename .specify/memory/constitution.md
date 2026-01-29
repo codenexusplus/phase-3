@@ -1,55 +1,67 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- SYNC IMPACT REPORT:
+Version change: N/A -> 1.0.0
+Modified principles: N/A (new constitution)
+Added sections: Architectural Mandate, Technical Stack & Skills, Coding & Naming Standards, Skills & Capabilities, Security & Privacy
+Removed sections: N/A
+Templates requiring updates: N/A (new file)
+Follow-up TODOs: None
+-->
+
+# AI Todo Chatbot Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Strict Statelessness
+The FastAPI server must not hold any in-memory state. Every request cycle must:
+1. Authenticate the `user_id`.
+2. Retrieve conversation history from Neon DB.
+3. Execute the Agentic loop.
+4. Persist the new state back to DB.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. MCP Protocol Compliance
+All business logic for Task CRUD must be encapsulated within an Official MCP Server. The AI Agent must interact with the DB *only* through these MCP tools.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Technical Stack Standardization
+- Runtime: Python 3.10+ (FastAPI)
+- Agentic Framework: OpenAI Agents SDK (using Agent + Runner patterns)
+- Tooling Protocol: Official MCP Python SDK
+- ORM & Database: SQLModel with Neon Serverless PostgreSQL (Async Engine)
+- Validation: Pydantic V2 for all schemas and tool parameters
+- Communication: Asynchronous (async/await) throughout the entire stack
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Coding & Naming Standards
+- Classes: `PascalCase`
+- Functions/Variables: `snake_case`
+- Constants: `UPPER_SNAKE_CASE`
+- Error Handling: Use structured exceptions. Tools must return clear error messages (e.g., "Task ID {id} not found") so the Agent can explain the issue to the user.
+- Type Hinting: Mandatory type hints for all function signatures.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Natural Language Processing Capabilities
+- Context Injection: The system must implement a 'Last-N Messages' sliding window (default: 10) for conversation context.
+- Natural Language Understanding (NLU): The agent must handle ambiguous commands (e.g., "Remind me to buy milk" -> `add_task`).
+- Confirmation Flow: The Agent must use formatted Markdown to confirm actions (e.g., "✅ **Task Added:** Buy groceries").
 
-### [PRINCIPLE_6_NAME]
+### VI. Security & Privacy
+Every SQL query must include a `WHERE user_id = :user_id` clause to prevent data leakage between users. Sensitive keys (OpenAI, Neon URL) must be read from environment variables only.
 
+## Additional Constraints
 
-[PRINCIPLE__DESCRIPTION]
+### Database Tenancy
+All database queries must implement proper user isolation through tenancy controls. Each user's data must be completely isolated from others through the mandatory use of user_id filters.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Asynchronous Operations
+The entire stack must utilize async/await patterns to maximize efficiency and scalability. All database operations, API calls, and external service interactions must be asynchronous.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Development Workflow
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Error Handling Standards
+All tools and services must return structured error messages that allow the AI agent to clearly communicate issues to end users. Error messages should be informative but not expose internal system details.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### Validation Requirements
+All input and output must be validated using Pydantic V2 schemas. This includes request parameters, database models, and tool responses to ensure data integrity and prevent injection attacks.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution defines the mandatory practices for the AI Todo Chatbot project. All code submissions, reviews, and deployments must comply with these principles. Deviations require explicit approval and documentation of the exception.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-01-17 | **Last Amended**: 2026-01-17
