@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from contextlib import asynccontextmanager
 from backend.api.chat_endpoint import router as chat_router
 from backend.api.task_endpoint import router as task_router
@@ -7,16 +7,17 @@ from backend.database.connection import async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+from backend.websocket_server import handle_websocket_connection
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     # Initialize database tables if needed
-    from models.user import User
-    from models.task import Task
-    from models.message import Message
-    from models.conversation import Conversation
+    from backend.models.user import User
+    from backend.models.task import Task
+    from backend.models.message import Message
+    from backend.models.conversation import Conversation
     from sqlalchemy import inspect
     import sqlite3
 
@@ -58,6 +59,11 @@ app.include_router(task_router, prefix="/api", tags=["tasks"])
 # Include the auth router
 from backend.api.auth_endpoint import router as auth_router
 app.include_router(auth_router, prefix="/api", tags=["auth"])
+
+# WebSocket endpoint for real-time updates
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await handle_websocket_connection(websocket)
 
 @app.get("/")
 async def root():
